@@ -1,18 +1,25 @@
 
 import java.awt.Point;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class PointSequence {
+public class VectorialDataSample {
     private ArrayList<Point> points;
-    int[] xs;
-    int[] ys;
+    private int[] xs;
+    private int[] ys;
     private int period;
+    private int label;
     
-    public PointSequence(int period){
+    public VectorialDataSample(int period, int label){
         this.period = period;
         this.points = new ArrayList<Point>();
         this.xs = new int[]{0};
         this.ys = new int[]{0};
+        this.label = label;
     }
 
     void addPoint(Point p) {
@@ -38,5 +45,17 @@ public class PointSequence {
         }
         this.ys = ys;
         return ys;
+    }
+
+    void saveFigure() {
+        try {
+            PrintWriter writer = new PrintWriter("cuac", "UTF-8");
+            writer.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VectorialDataSample.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(VectorialDataSample.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    
     }
 }

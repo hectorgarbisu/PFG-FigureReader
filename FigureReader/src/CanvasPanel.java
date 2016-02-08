@@ -12,7 +12,7 @@ import javax.swing.JPanel;
  */
 public class CanvasPanel extends JPanel {
 
-    PointSequence ps;
+    VectorialDataSample ps;
 
     public CanvasPanel() {
         setBorder(BorderFactory.createLineBorder(Color.black));
@@ -26,13 +26,15 @@ public class CanvasPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(Color.GRAY);
-        g.drawString("Drag to draw", 10, 20);
+        g.drawString("Click and drag to draw", 10, 20);
+        g.drawString("Release left click to save file", 10, 40);
+        g.drawString("Press right click to delete current figure", 10, 60);
         if (ps != null) {
             g.drawPolyline(ps.getXs(), ps.getYs(), ps.size());
         }
     }
 
-    void drawPointSequence(PointSequence ps) {
+    void drawVectorialDataSample(VectorialDataSample ps) {
         this.ps = ps; 
         this.repaint();
     }

@@ -1,6 +1,6 @@
 /*
  * This is part of my grade project
- * All it's code is free to use and modify
+ * All its code is free to use and modify
  */
 
 import java.awt.MouseInfo;
@@ -18,15 +18,17 @@ import javax.swing.Timer;
  * positions and the label will be used later for Machine Learning.
  */
 public class MainFrame extends javax.swing.JFrame {
+
     // temporal data regarding mouse movement is considered relevant
     // stating a fixed period helps to differentiate between fast and slow
     // mouse swipes
-    private final int PERIOD = 100; 
-    /**
-     * Creates new form MainFrame
-     */
+
+    private final int PERIOD = 20; //miliseconds
+
     public MainFrame() {
         initComponents();
+        this.vds = new VectorialDataSample(PERIOD,
+                figureSelector.getSelectedIndex());
     }
 
     /**
@@ -41,7 +43,6 @@ public class MainFrame extends javax.swing.JFrame {
         canvasPanel1 = new CanvasPanel();
         controlPanel = new javax.swing.JPanel();
         figureSelector = new javax.swing.JComboBox();
-        saveFigureButton = new javax.swing.JButton();
         canvasPanel2 = new CanvasPanel();
 
         javax.swing.GroupLayout canvasPanel1Layout = new javax.swing.GroupLayout(canvasPanel1);
@@ -58,14 +59,12 @@ public class MainFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Figure reader");
 
-        figureSelector.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        figureSelector.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Square", "Circle", "Triangle", "Rectangle", "V", "L", "Z", "N", "S" }));
         figureSelector.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 figureSelectorActionPerformed(evt);
             }
         });
-
-        saveFigureButton.setText("Save (Enter)");
 
         javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
         controlPanel.setLayout(controlPanelLayout);
@@ -73,15 +72,11 @@ public class MainFrame extends javax.swing.JFrame {
             controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(controlPanelLayout.createSequentialGroup()
                 .addComponent(figureSelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(saveFigureButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         controlPanelLayout.setVerticalGroup(
             controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(figureSelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(saveFigureButton))
+            .addComponent(figureSelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         canvasPanel2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -128,17 +123,31 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void figureSelectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_figureSelectorActionPerformed
         // TODO add your handling code here:
+        clearCanvas();
     }//GEN-LAST:event_figureSelectorActionPerformed
 
     private void canvasPanel2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasPanel2MousePressed
         // Initialize counter and draw current point
-        timDate.start();
+        if (SwingUtilities.isLeftMouseButton(evt)) {
+            timDate.start();
+        }
     }//GEN-LAST:event_canvasPanel2MousePressed
 
     private void canvasPanel2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_canvasPanel2MouseReleased
         // Stops time counter
         timDate.stop();
+        if (SwingUtilities.isRightMouseButton(evt)) {
+            //If right clic, it should delete the current figure
+            clearCanvas();
+        } else if (SwingUtilities.isLeftMouseButton(evt)) {
+            vds.saveFigure();
+        }
     }//GEN-LAST:event_canvasPanel2MouseReleased
+
+    private void clearCanvas() {
+        vds = new VectorialDataSample(PERIOD,figureSelector.getSelectedIndex());
+        canvasPanel2.drawVectorialDataSample(vds);
+    }
 
     /**
      * @param args the command line arguments
@@ -175,22 +184,21 @@ public class MainFrame extends javax.swing.JFrame {
         });
     }
 
-    private void drawCurrentPoint(ActionEvent evt) {
+    private void drawCurrentPoint() {
         Point p = MouseInfo.getPointerInfo().getLocation();
 //        System.out.println(p.getX() + " " + p.getY());
         SwingUtilities.convertPointFromScreen(p, canvasPanel2);
         System.out.println(p.getX() + " " + p.getY());
-        if (p.getX() > 0 && p.getY() > 0) {
-            ps.addPoint(p);
-            canvasPanel2.drawPointSequence(ps);
-        }
+        vds.addPoint(p);
+        canvasPanel2.drawVectorialDataSample(vds);
+
     }
-    
-    PointSequence ps = new PointSequence(PERIOD);
+
+    VectorialDataSample vds;
     private Timer timDate = new Timer(PERIOD, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent evt) {
-            drawCurrentPoint(evt);
+            drawCurrentPoint();
         }
     });
 
@@ -199,7 +207,7 @@ public class MainFrame extends javax.swing.JFrame {
     private CanvasPanel canvasPanel2;
     private javax.swing.JPanel controlPanel;
     private javax.swing.JComboBox figureSelector;
-    private javax.swing.JButton saveFigureButton;
     // End of variables declaration//GEN-END:variables
+
 
 }
