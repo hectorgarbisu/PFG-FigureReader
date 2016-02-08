@@ -141,6 +141,7 @@ public class MainFrame extends javax.swing.JFrame {
             clearCanvas();
         } else if (SwingUtilities.isLeftMouseButton(evt)) {
             vds.saveFigure();
+            clearCanvas();
         }
     }//GEN-LAST:event_canvasPanel2MouseReleased
 

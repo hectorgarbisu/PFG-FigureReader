@@ -1,6 +1,8 @@
 
 import java.awt.Point;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -30,32 +32,48 @@ public class VectorialDataSample {
     }
     public int[] getXs(){
         if(this.xs.length==points.size()) return xs;
-        int[] xs = new int[points.size()];
-        for (int i = 0; i < xs.length; i++) {
-            xs[i] = (int) points.get(i).getX();
-        }
-        this.xs=xs;
+        refreshXYVectors();
         return xs;
     }
+    
    public int[] getYs(){
-       if(this.ys.length==points.size()) return ys;
+        if(this.ys.length==points.size()) return ys;
+        refreshXYVectors();
+        return this.ys;
+    }
+    private void refreshXYVectors() {
+        int[] xs = new int[points.size()];;
         int[] ys = new int[points.size()];
-        for (int i = 0; i < ys.length; i++) {
+        for (int i = 0; i < xs.length; i++) {
+            xs[i] = (int) points.get(i).getX();
             ys[i] = (int) points.get(i).getY();
         }
-        this.ys = ys;
-        return ys;
+        this.ys=ys;
+        this.xs=xs;   
     }
-
-    void saveFigure() {
+    void saveFigure(){
         try {
-            PrintWriter writer = new PrintWriter("cuac", "UTF-8");
+            File dir = new File("generatedfigures");
+            dir.mkdir();
+            File file = File.createTempFile("fig"+label+"-"+period+"ms"+"-",
+                    ".vdsf", dir);
+            PrintWriter writer = new PrintWriter(dir+"/"+file.getName(), "UTF-8");
+            writer.println(period);
+            writer.println(label);
+            for (int i = 0; i < xs.length; i++) {
+                writer.println(xs[i]+" "+ys[i]);
+            }
             writer.close();
+            
         } catch (FileNotFoundException ex) {
             Logger.getLogger(VectorialDataSample.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(VectorialDataSample.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VectorialDataSample.class.getName()).log(Level.SEVERE, null, ex);
         }
     
     }
+
+
 }
